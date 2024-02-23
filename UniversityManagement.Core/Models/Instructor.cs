@@ -1,4 +1,7 @@
-﻿namespace UniversityManagement.Core.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace UniversityManagement.Core.Models;
 
 public partial class Instructor
 {
@@ -23,6 +26,8 @@ public partial class Instructor
     public string? DeletedBy { get; set; }
 
     public DateTime? DeleteDate { get; set; }
+
+    public string? UsersId { get; set; }
 
     public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
 }

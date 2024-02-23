@@ -8,32 +8,32 @@ namespace University_Management_System.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly IJwtAuthenticationService jwt;
+        private readonly IAccountService acc;
 
-        public LoginController(IJwtAuthenticationService JWT)
+        public LoginController(IAccountService Acc)
         {
-            jwt = JWT;
+            acc = Acc;
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginRequest request)
+        public async Task<IActionResult> Login(LoginRequest request)
         {
             if (string.IsNullOrEmpty(request.Email))
-            {
                 return BadRequest("Email is required.");
-            }
 
-            bool emailExists = jwt.EmailExists(request.Email);
+            if (string.IsNullOrEmpty(request.Password))
+                return BadRequest("Please enter the password.");
 
-            if (!emailExists)
+            var signInResult = await acc.LoginAsync(request.Email, request.Password, rememberMe: false);
+
+            if (signInResult.SignInResult)
             {
-                return NotFound("User with provided email not found.");
+                string token = acc.GenerateJwtToken(signInResult.User, signInResult.Roles);
+                return Ok(new { token, signInResult.Roles});
             }
 
-            // Generate JWT token
-            string token = jwt.GenerateJwtToken(request.Email);
-
-            return Ok(new { token });
+            else
+                return BadRequest("Invalid email or password.");
         }
     }
 }

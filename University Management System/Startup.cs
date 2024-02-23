@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using UniversityManagement.Infrastructure.Middlewares;
 
 namespace University_Management_System
 {
@@ -9,13 +10,23 @@ namespace University_Management_System
         public static void Configure(IApplicationBuilder app)
         {
             // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-            //app.UseMiddleware<LoggingMiddleware>();
+            app.UseMiddleware<RequestResponseLoggingMiddleware>();
+            app.UseCors("CorsPolicy");
+
         }
         public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
 
-            // authentication services
-            services.AddAuthentication(options =>
+        // authentication services
+        services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -35,6 +46,5 @@ namespace University_Management_System
             });
             services.AddAuthorization();
         }
-
     }
 }

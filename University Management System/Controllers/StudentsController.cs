@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UniversityManagement.Core.Models;
 using UniversityManagement.Core.Servicces;
 using UniversityManagement.Core.ViewModels;
 
@@ -37,29 +38,27 @@ namespace University_Management_System.Controllers
 
         // POST api/<StudentsController>
         [HttpPost]
-        public async Task<IActionResult> AddAsync(StudentVM student)
+        public async Task<IActionResult> AddAsync(STUDRegestrationVM student)
         {
-            var response = await StudentService.AddAsync(student);
+            var response = await StudentService.Register(student);
             return StatusCode(response.StatusCode, response);
         }
 
         // PUT api/<StudentsController>/5
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateAsync(StudentVM student, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> UpdateAsync(StudentVM student)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await StudentService.UpdateAsync(student, jwtToken);
+            var response = await StudentService.UpdateAsync(student);
             return StatusCode(response.StatusCode, response);
         }
 
         // DELETE api/<StudentsController>/5
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> DeleteAsync(int id, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await StudentService.DeleteAsync(id, jwtToken);
+            var response = await StudentService.DeleteAsync(id);
             return StatusCode(response.StatusCode, response);
         }
     }

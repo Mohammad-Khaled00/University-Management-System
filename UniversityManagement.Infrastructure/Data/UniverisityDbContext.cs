@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using UniversityManagement.Core.Models;
 
 namespace UniversityManagement.Infrastructure.Data;
 
-public partial class UniverisityDbContext : DbContext
+public partial class UniverisityDbContext : IdentityDbContext<IdentityUser>
 {
     public UniverisityDbContext()
     {
@@ -20,6 +24,8 @@ public partial class UniverisityDbContext : DbContext
 
     public virtual DbSet<Instructor> Instructors { get; set; }
 
+    public virtual DbSet<RequestResponseLog> RequestResponseLogs { get; set; }
+
     public virtual DbSet<Student> Students { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,6 +34,7 @@ public partial class UniverisityDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Course>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Courses__3214EC27FACC0726");
@@ -113,6 +120,20 @@ public partial class UniverisityDbContext : DbContext
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(15)
                 .IsUnicode(false);
+            entity.Property(e => e.UsersId)
+                .HasMaxLength(450)
+                .HasColumnName("UsersID");
+        });
+
+        modelBuilder.Entity<RequestResponseLog>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__RequestR__3214EC078EB523A3");
+
+            entity.ToTable("RequestResponseLog");
+
+            entity.Property(e => e.LogDateTime).HasColumnType("datetime");
+            entity.Property(e => e.RequestMethod).HasMaxLength(10);
+            entity.Property(e => e.RequestUrl).HasMaxLength(1000);
         });
 
         modelBuilder.Entity<Student>(entity =>
@@ -140,6 +161,9 @@ public partial class UniverisityDbContext : DbContext
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(15)
                 .IsUnicode(false);
+            entity.Property(e => e.UsersId)
+                .HasMaxLength(450)
+                .HasColumnName("UsersID");
         });
 
         OnModelCreatingPartial(modelBuilder);

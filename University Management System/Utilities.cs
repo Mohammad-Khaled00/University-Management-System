@@ -24,7 +24,7 @@ namespace University_Management_System
             services.AddScoped<IInstructorRepo, InstructorRepo>();
             services.AddScoped<ICourseRepo, CourseRepo>();
             services.AddScoped<IEnrollmentRepo, EnrollmentRepo>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IFetchTokenRepo, FetchTokenRepo>();
 
             //Mappers
             var mapperConfig = new MapperConfiguration(mc =>
@@ -42,9 +42,10 @@ namespace University_Management_System
             services.AddScoped<IEnrollmentService, EnrollmentService>();
             services.AddScoped<IInstructorService, InstructorService>();
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IRegisterService, RegisterService>();
 
             //JWT
-            services.AddScoped<IJwtAuthenticationService, JwtAuthenticationService>();
+            services.AddScoped<IAccountService, AccountService>();
         }
     }
 }

@@ -6,7 +6,7 @@ namespace UniversityManagement.Core.Servicces
     {
         Task<ResponseEntity<IEnumerable<EnrollmentVM>>> GetAllAsync();
         Task<ResponseEntity<EnrollmentVM>> GetByCourseAndStudentAsync(int courseId, int studentId);
-        Task<ResponseEntity<EnrollmentVM>> AddAsync(EnrollmentVM enrollment, string jwtToken);
-        Task<ResponseEntity<bool>> DeleteAsync(int courseId, int studentId, string jwtToken);
+        Task<ResponseEntity<EnrollmentVM>> AddAsync(EnrollmentVM enrollment);
+        Task<ResponseEntity<bool>> DeleteAsync(int courseId, int studentId);
     }
 }

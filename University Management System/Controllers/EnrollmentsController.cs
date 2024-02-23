@@ -37,20 +37,18 @@ namespace University_Management_System.Controllers
         // POST api/<EnrollmentsController>
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddAsync(EnrollmentVM enrollment, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> AddAsync(EnrollmentVM enrollment)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await EnrollmentService.AddAsync(enrollment, jwtToken);
+            var response = await EnrollmentService.AddAsync(enrollment);
             return StatusCode(response.StatusCode, response);
         }
 
         // DELETE api/<EnrollmentsController>/5/5
         [HttpDelete("{courseId}/{studentId}")]
         [Authorize]
-        public async Task<IActionResult> DeleteAsync(int courseId, int studentId, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> DeleteAsync(int courseId, int studentId)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await EnrollmentService.DeleteAsync(courseId, studentId, jwtToken);
+            var response = await EnrollmentService.DeleteAsync(courseId, studentId);
             return StatusCode(response.StatusCode, response);
         }
     }

@@ -10,11 +10,13 @@ namespace UniversityManagement.app.Services
     {
         private readonly IEnrollmentRepo _enrollmentRepo;
         private readonly IMapper _mapper;
+        private readonly IFetchTokenRepo _tokenRepo;
 
-        public EnrollmentService(IEnrollmentRepo enrollmentRepo, IMapper mapper)
+        public EnrollmentService(IEnrollmentRepo enrollmentRepo, IMapper mapper, IFetchTokenRepo tokenRepo)
         {
             _enrollmentRepo = enrollmentRepo ?? throw new ArgumentNullException(nameof(enrollmentRepo));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _tokenRepo = tokenRepo;
         }
 
         public async Task<ResponseEntity<IEnumerable<EnrollmentVM>>> GetAllAsync()
@@ -59,9 +61,9 @@ namespace UniversityManagement.app.Services
             return response;
         }
 
-        public async Task<ResponseEntity<EnrollmentVM>> AddAsync(EnrollmentVM enrollment, string jwtToken)
+        public async Task<ResponseEntity<EnrollmentVM>> AddAsync(EnrollmentVM enrollment)
         {
-            var user = JwtTokenHelper.ExtractClaimsFromToken(jwtToken);
+            var user = _tokenRepo.FetchClaims();
             var response = new ResponseEntity<EnrollmentVM>();
             try
             {
@@ -80,9 +82,9 @@ namespace UniversityManagement.app.Services
             return response;
         }
 
-        public async Task<ResponseEntity<bool>> DeleteAsync(int courseId, int studentId, string jwtToken)
+        public async Task<ResponseEntity<bool>> DeleteAsync(int courseId, int studentId)
         {
-            var user = JwtTokenHelper.ExtractClaimsFromToken(jwtToken);
+            var user = _tokenRepo.FetchClaims();
             var response = new ResponseEntity<bool>();
             try
             {

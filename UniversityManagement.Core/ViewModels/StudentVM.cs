@@ -21,5 +21,7 @@
         public string? DeletedBy { get; set; }
 
         public DateTime? DeleteDate { get; set; }
+
+        public string? UsersId { get; set; }
     }
 }

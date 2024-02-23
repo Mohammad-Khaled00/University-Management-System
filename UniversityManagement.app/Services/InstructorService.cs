@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Transactions;
 using UniversityManagement.Core.Models;
 using UniversityManagement.Core.Repositories;
 using UniversityManagement.Core.Servicces;
@@ -10,11 +11,15 @@ namespace UniversityManagement.app.Services
     {
         private readonly IInstructorRepo _instructorRepo;
         private readonly IMapper _mapper;
+        private readonly IRegisterService registerService;
+        private readonly IFetchTokenRepo _tokenRepo;
 
-        public InstructorService(IInstructorRepo instructorRepo, IMapper mapper)
+        public InstructorService(IInstructorRepo instructorRepo, IMapper mapper, IRegisterService RegisterService, IFetchTokenRepo tokenRepo)
         {
             _instructorRepo = instructorRepo ?? throw new ArgumentNullException(nameof(instructorRepo));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            registerService = RegisterService;
+            _tokenRepo = tokenRepo;
         }
 
         public async Task<ResponseEntity<IEnumerable<InstructorVM>>> GetAllAsync()
@@ -59,28 +64,9 @@ namespace UniversityManagement.app.Services
             return response;
         }
 
-        public async Task<ResponseEntity<InstructorVM>> AddAsync(InstructorVM instructor)
+        public async Task<ResponseEntity<InstructorVM>> UpdateAsync(InstructorVM instructor)
         {
-            var response = new ResponseEntity<InstructorVM>();
-            try
-            {
-                instructor.IsDeleted = false;
-                var instructorModel = _mapper.Map<Instructor>(instructor);
-                await _instructorRepo.AddAsync(instructorModel);
-                response.Data = instructor;
-                response.StatusCode = 200; // OK
-            }
-            catch (Exception ex)
-            {
-                response.Errors = new List<string> { ex.Message };
-                response.StatusCode = 500; // Internal Server Error
-            }
-            return response;
-        }
-
-        public async Task<ResponseEntity<InstructorVM>> UpdateAsync(InstructorVM instructor, string jwtToken)
-        {
-            var user = JwtTokenHelper.ExtractClaimsFromToken(jwtToken);
+            var user = _tokenRepo.FetchClaims();
             var response = new ResponseEntity<InstructorVM>();
             try
             {
@@ -112,9 +98,56 @@ namespace UniversityManagement.app.Services
             return response;
         }
 
-        public async Task<ResponseEntity<bool>> DeleteAsync(int id, string jwtToken)
+        public async Task<ResponseEntity<InstructorVM>> Register(INSRegestrationVM Data)
         {
-            var user = JwtTokenHelper.ExtractClaimsFromToken(jwtToken);
+            using TransactionScope transaction = new(TransactionScopeAsyncFlowOption.Enabled);
+            try
+            {
+                TransactionManager.ImplicitDistributedTransactions = true;
+                TransactionInterop.GetTransmitterPropagationToken(Transaction.Current);
+                Data.instructor.Name = Data.Model.Username;
+                var res = await registerService.RegisterAsync(Data.Model, "Instructor");
+                if (res.Errors != null)
+                    throw new Exception(res.Errors.FirstOrDefault());
+
+                Data.instructor.UsersId = res.Data.Id;
+                Data.instructor.Email = res.Data.Email;
+                var instructor = await AddAsync(Data.instructor);
+                if (instructor.Errors != null)
+                    throw new Exception(instructor.Errors.FirstOrDefault());
+
+                transaction.Complete();
+                return instructor;
+            }
+            catch (Exception ex)
+            {
+                transaction.Dispose();
+                return new ResponseEntity<InstructorVM> { Errors = [$"{ex.Message}"] };
+            }
+        }
+
+        public async Task<ResponseEntity<InstructorVM>> AddAsync(InstructorVM instructor)
+        {
+            var response = new ResponseEntity<InstructorVM>();
+            try
+            {
+                instructor.IsDeleted = false;
+                var instructorModel = _mapper.Map<Instructor>(instructor);
+                await _instructorRepo.AddAsync(instructorModel);
+                response.Data = instructor;
+                response.StatusCode = 200; // OK
+            }
+            catch (Exception ex)
+            {
+                response.Errors = new List<string> { ex.Message };
+                response.StatusCode = 500; // Internal Server Error
+            }
+            return response;
+        }
+
+        public async Task<ResponseEntity<bool>> DeleteAsync(int id)
+        {
+            var user = _tokenRepo.FetchClaims();
             var response = new ResponseEntity<bool>();
             try
             {

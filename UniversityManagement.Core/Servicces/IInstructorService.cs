@@ -7,8 +7,8 @@ namespace UniversityManagement.Core.Servicces
         Task<ResponseEntity<IEnumerable<InstructorVM>>> GetAllAsync();
         Task<ResponseEntity<InstructorVM>> GetByIdAsync(int id);
         Task<ResponseEntity<InstructorVM>> AddAsync(InstructorVM instructor);
-        Task<ResponseEntity<InstructorVM>> UpdateAsync(InstructorVM instructor, string jwtToken);
-        Task<ResponseEntity<bool>> DeleteAsync(int id, string jwtToken);
-
+        Task<ResponseEntity<InstructorVM>> UpdateAsync(InstructorVM instructor);
+        Task<ResponseEntity<bool>> DeleteAsync(int id);
+        Task<ResponseEntity<InstructorVM>> Register(INSRegestrationVM Data);
     }
 }

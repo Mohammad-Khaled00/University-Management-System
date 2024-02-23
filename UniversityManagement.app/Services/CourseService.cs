@@ -10,11 +10,13 @@ namespace UniversityManagement.app.Services
     {
         private readonly ICourseRepo _courseRepo;
         private readonly IMapper _mapper;
+        private readonly IFetchTokenRepo _tokenRepo;
 
-        public CourseService(ICourseRepo courseRepo, IMapper mapper)
+        public CourseService(ICourseRepo courseRepo, IMapper mapper, IFetchTokenRepo tokenRepo)
         {
             _courseRepo = courseRepo ?? throw new ArgumentNullException(nameof(courseRepo));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _tokenRepo = tokenRepo;
         }
 
         public async Task<ResponseEntity<IEnumerable<CourseVM>>> GetAllAsync()
@@ -59,9 +61,9 @@ namespace UniversityManagement.app.Services
             return response;
         }
 
-        public async Task<ResponseEntity<CourseVM>> AddAsync(CourseVM course, string jwtToken)
+        public async Task<ResponseEntity<CourseVM>> AddAsync(CourseVM course)
         {
-            var user = JwtTokenHelper.ExtractClaimsFromToken(jwtToken);
+            var user = _tokenRepo.FetchClaims();
             var response = new ResponseEntity<CourseVM>();
             try
             {
@@ -81,9 +83,9 @@ namespace UniversityManagement.app.Services
             return response;
         }
 
-        public async Task<ResponseEntity<CourseVM>> UpdateAsync(CourseVM course, string jwtToken)
+        public async Task<ResponseEntity<CourseVM>> UpdateAsync(CourseVM course)
         {
-            var user = JwtTokenHelper.ExtractClaimsFromToken(jwtToken);
+            var user = _tokenRepo.FetchClaims();
             var response = new ResponseEntity<CourseVM>();
             try
             {
@@ -101,9 +103,9 @@ namespace UniversityManagement.app.Services
             return response;
         }
 
-        public async Task<ResponseEntity<bool>> DeleteAsync(int id, string jwtToken)
+        public async Task<ResponseEntity<bool>> DeleteAsync(int id)
         {
-            var user = JwtTokenHelper.ExtractClaimsFromToken(jwtToken);
+            var user = _tokenRepo.FetchClaims();
             var response = new ResponseEntity<bool>();
             try
             {

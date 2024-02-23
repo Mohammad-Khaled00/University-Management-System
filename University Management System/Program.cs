@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using University_Management_System;
+using UniversityManagement.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("MyConnect");
 builder.Services.ConfigureServices(connectionString);
 Startup.ConfigureServices(builder.Services);
+builder.Services
+    .AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedEmail = false;
+    })
+    .AddEntityFrameworkStores<UniverisityDbContext>();
+    //.AddRoles<IdentityRole>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

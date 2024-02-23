@@ -38,30 +38,27 @@ namespace University_Management_System.Controllers
         // POST api/<CoursesController>
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddAsync(CourseVM course, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> AddAsync(CourseVM course)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await CourseService.AddAsync(course, jwtToken);
+            var response = await CourseService.AddAsync(course);
             return StatusCode(response.StatusCode, response);
         }
 
         // PUT api/<CoursesController>/5
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateAsync(CourseVM course, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> UpdateAsync(CourseVM course)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await CourseService.UpdateAsync(course, jwtToken);
+            var response = await CourseService.UpdateAsync(course);
             return StatusCode(response.StatusCode, response);
         }
 
         // DELETE api/<CoursesController>/5
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> DeleteAsync(int id, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await CourseService.DeleteAsync(id, jwtToken);
+            var response = await CourseService.DeleteAsync(id);
             return StatusCode(response.StatusCode, response);
         }
     }

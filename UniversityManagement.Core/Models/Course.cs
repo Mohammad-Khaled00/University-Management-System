@@ -1,4 +1,7 @@
-﻿namespace UniversityManagement.Core.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace UniversityManagement.Core.Models;
 
 public partial class Course
 {

@@ -37,29 +37,27 @@ namespace University_Management_System.Controllers
 
         // POST api/<InstructorsController>
         [HttpPost]
-        public async Task<IActionResult> AddAsync(InstructorVM instructor)
+        public async Task<IActionResult> AddAsync(INSRegestrationVM instructor)
         {
-            var response = await InstructorService.AddAsync(instructor);
+            var response = await InstructorService.Register(instructor);
             return StatusCode(response.StatusCode, response);
         }
 
         // PUT api/<InstructorsController>/5
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateAsync(InstructorVM instructor, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> UpdateAsync(InstructorVM instructor)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await InstructorService.UpdateAsync(instructor, jwtToken);
+            var response = await InstructorService.UpdateAsync(instructor);
             return StatusCode(response.StatusCode, response);
         }
 
         // DELETE api/<InstructorsController>/5
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> DeleteAsync(int id, [FromHeader(Name = "Authorization")] string authorizationHeader)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            string jwtToken = authorizationHeader?.Replace("Bearer ", "");
-            var response = await InstructorService.DeleteAsync(id, jwtToken);
+            var response = await InstructorService.DeleteAsync(id);
             return StatusCode(response.StatusCode, response);
         }
     }
